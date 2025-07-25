@@ -26,6 +26,7 @@ const AppsToggleButton = GObject.registerClass(class extends PanelMenu.Button {
         this._icon = new St.Icon({
             icon_name: 'view-app-grid-symbolic',
             style_class: 'system-status-icon',
+            icon_size: 32,
         });
 
         this.add_child(this._icon);
