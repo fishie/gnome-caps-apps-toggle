@@ -1,0 +1,8 @@
+{
+    "name": "Caps Lock Apps Toggle",
+    "description": "Toggle apps overview with Caps Lock",
+    "uuid": "caps-apps-toggle@rishie.rishie.se",
+    "shell-version": ["48"],
+    "version": 1,
+    "settings-schema": "org.gnome.shell.extensions.caps-apps-toggle"
+}
