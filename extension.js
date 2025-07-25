@@ -1,8 +1,11 @@
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import Gio from 'gi://Gio';
+import St from 'gi://St';
+import GObject from 'gi://GObject';
 
 const KEYBINDING_NAME = 'toggle-key';
 const MODIFIED_KEYBOARD_SETTING = 'modified-keyboard';
@@ -14,17 +17,54 @@ const CAPS_HYPER_OPTION = 'caps:hyper';
 const log = (message) => console.log(`[CapsAppsToggle] ${message}`);
 const error = (message) => console.error(`[CapsAppsToggle] ${message}`);
 
+const AppsToggleButton = GObject.registerClass(class extends PanelMenu.Button {
+    _init(extension) {
+        super._init(0.0, 'Apps Toggle Button', false);
+        this._extension = extension;
+
+        // Create the button icon using a grid/apps icon
+        this._icon = new St.Icon({
+            icon_name: 'view-app-grid-symbolic',
+            style_class: 'system-status-icon',
+        });
+
+        this.add_child(this._icon);
+
+        // Connect the button click to toggle apps overview
+        this.connect('button-press-event', () => this._extension._toggleAppsOverview());
+    }
+});
+
 export default class CapsAppsToggleExtension extends Extension {
     enable() {
         log('Extension enabled');
         this._setCapsLockToHyper();
         this._bindKey();
+        this._addTopBarButton();
     }
 
     disable() {
         log('Extension disabled');
         this._unbindKey();
+        this._removeTopBarButton();
         this._restoreOriginalCapsLockBehavior();
+    }
+
+    _addTopBarButton() {
+        log('Adding top bar button');
+        this._button = new AppsToggleButton(this);
+
+        // Add the button to the right side of the top bar
+        // You can change 'right' to 'center' or 'left' if preferred
+        Main.panel.addToStatusArea('apps-toggle-button', this._button, 0, 'right');
+    }
+
+    _removeTopBarButton() {
+        log('Removing top bar button');
+        if (this._button) {
+            this._button.destroy();
+            this._button = null;
+        }
     }
 
     _setCapsLockToHyper() {
