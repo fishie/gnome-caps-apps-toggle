@@ -12,7 +12,7 @@
     </key>
     <key name="caps-options" type="as">
       <default>[]</default>
-      <summary>Original Caps Lock §XKB options before modification</summary>
+      <summary>Original Caps Lock XKB options before modification</summary>
     </key>
   </schema>
 </schemalist>
