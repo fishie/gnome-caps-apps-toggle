@@ -38,9 +38,8 @@ function toggleApps() {
 const AppsToggleButton = GObject.registerClass(class extends PanelMenu.Button {
     _init() {
         super._init(0.0, 'Apps Toggle Button', false);
-        // Create the button icon using a grid/apps icon
         this.add_child(new St.Icon({
-            icon_name: 'view-app-grid-symbolic',
+            icon_name: 'view-app-grid-symbolic', // Use app grid icon
             style_class: 'system-status-icon',
             icon_size: 32,
         }));
@@ -66,10 +65,8 @@ export default class CapsAppsToggleExtension extends Extension {
     _addTopBarButton() {
         log('Adding top bar button');
         this._button = new AppsToggleButton(this);
-
-        // Add the button to the right side of the top bar
-        // You can change 'right' to 'center' or 'left' if preferred
-        Main.panel.addToStatusArea('apps-toggle-button', this._button, 0, 'right');
+        // Attempt to add our button to the right of the activities overview button
+        Main.panel.addToStatusArea('apps-toggle-button', this._button, 1, 'left');
     }
 
     _removeTopBarButton() {
