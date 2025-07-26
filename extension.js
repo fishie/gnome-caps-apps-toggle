@@ -17,22 +17,34 @@ const CAPS_HYPER_OPTION = 'caps:hyper';
 const log = (message) => console.log(`[CapsAppsToggle] ${message}`);
 const error = (message) => console.error(`[CapsAppsToggle] ${message}`);
 
-const AppsToggleButton = GObject.registerClass(class extends PanelMenu.Button {
-    _init(extension) {
-        super._init(0.0, 'Apps Toggle Button', false);
-        this._extension = extension;
+/**
+ * Main.overview.showApps() aborts if the overview is already visible so we
+ * can't use it to show apps when the overview is visible. Instead, we set the
+ * checked state of the showAppsButton to true which causes the overview to show
+ * the apps grid.
+ */
+function toggleApps() {
+    if (Main.overview.visible) {
+        if (Main.overview.dash.showAppsButton.checked) {
+            Main.overview.hide();
+        } else {
+            Main.overview.dash.showAppsButton.checked = true;
+        }
+    } else {
+        Main.overview.showApps();
+    }
+}
 
+const AppsToggleButton = GObject.registerClass(class extends PanelMenu.Button {
+    _init() {
+        super._init(0.0, 'Apps Toggle Button', false);
         // Create the button icon using a grid/apps icon
-        this._icon = new St.Icon({
+        this.add_child(new St.Icon({
             icon_name: 'view-app-grid-symbolic',
             style_class: 'system-status-icon',
             icon_size: 32,
-        });
-
-        this.add_child(this._icon);
-
-        // Connect the button click to toggle apps overview
-        this.connect('button-press-event', () => this._extension._toggleAppsOverview());
+        }));
+        this.connect('button-press-event', toggleApps);
     }
 });
 
@@ -123,20 +135,12 @@ export default class CapsAppsToggleExtension extends Extension {
             this.getSettings(),
             Meta.KeyBindingFlags.NONE,
             Shell.ActionMode.ALL,
-            this._toggleAppsOverview.bind(this)
+            toggleApps
         );
     }
 
     _unbindKey() {
         log('Unbinding key for toggling apps overview');
         Main.wm.removeKeybinding(KEYBINDING_NAME);
-    }
-
-    _toggleAppsOverview() {
-        if (Main.overview.visible) {
-            Main.overview.hide();
-        } else {
-            Main.overview.showApps();
-        }
     }
 }
