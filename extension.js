@@ -18,20 +18,23 @@ const log = (message) => console.log(`[CapsAppsToggle] ${message}`);
 const error = (message) => console.error(`[CapsAppsToggle] ${message}`);
 
 /**
- * Main.overview.showApps() aborts if the overview is already visible so we
- * can't use it to show apps when the overview is visible. Instead, we set the
- * checked state of the showAppsButton to true which causes the overview to show
- * the apps grid.
+ * showApps() aborts if the overview is already visible so we can't use it to
+ * show the apps grid when the overview is visible. Instead, we set the checked
+ * state of the showAppsButton to true which causes the overview to show the
+ * apps grid.
  */
 function toggleApps() {
-    if (Main.overview.visible) {
-        if (Main.overview.dash.showAppsButton.checked) {
-            Main.overview.hide();
+    const { overview } = Main;
+    const { showAppsButton } = overview.dash;
+
+    if (overview.visible) {
+        if (showAppsButton.checked) {
+            overview.hide();
         } else {
-            Main.overview.dash.showAppsButton.checked = true;
+            showAppsButton.checked = true;
         }
     } else {
-        Main.overview.showApps();
+        overview.showApps();
     }
 }
 
